@@ -1,4 +1,6 @@
 import collections
+from utils import get_file_lines
+
 
 def get_lists(lines: list[str]):
     first_array = []
@@ -12,8 +14,8 @@ def get_lists(lines: list[str]):
     return first_array, second_array
 
 
-def run_first_task(lines: list[str]):
-    print("\nRunning level 1\n")
+def run_first_task(file_name):
+    lines = get_file_lines(file_name)
     
     diffs = 0
     first_array, second_array = get_lists(lines)
@@ -32,8 +34,8 @@ def run_first_task(lines: list[str]):
     print('sum of diffs:', diffs)
     
 
-def run_second_task(lines: list[str]):
-    print("\nRunning the second part of level 1\n")
+def run_second_task(file_name):
+    lines = get_file_lines(file_name)
 
     score = 0
     first_array, second_array = get_lists(lines)

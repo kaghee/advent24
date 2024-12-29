@@ -1,3 +1,6 @@
+from utils import get_file_lines
+
+
 def is_negative(num: int):
     return num < 0
 
@@ -17,7 +20,9 @@ def is_report_safe(report) -> bool:
     return True
 
 
-def run_first_task(lines: list[str]):
+def run_first_task(file_name):
+    lines = get_file_lines(file_name)
+
     counter = 0
 
     for line in lines:
@@ -39,7 +44,9 @@ def is_almost_safe(report):
     return False
             
 
-def run_second_task(lines: list[str]):
+def run_second_task(file_name):
+    lines = get_file_lines(file_name)
+
     counter = 0
     unsafe_reports = []
 

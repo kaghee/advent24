@@ -1,7 +1,10 @@
 import re
+from utils import get_file_lines
 
 
-def run_first_task(lines: list[str]):
+def run_first_task(file_name):
+    lines = get_file_lines(file_name)
+
     scores = 0
     for line in lines:
         matches = re.findall(r"mul\(\d{1,3},\d{1,3}\)", line)
@@ -12,7 +15,9 @@ def run_first_task(lines: list[str]):
     print(scores)
 
 
-def run_second_task(lines: list[str]):
+def run_second_task(file_name):
+    lines = get_file_lines(file_name)
+
     scores = 0
     enabled = True
     for line in lines:

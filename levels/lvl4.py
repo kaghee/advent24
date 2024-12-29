@@ -1,5 +1,6 @@
 import re
 import numpy as np
+from utils import get_file_lines
 
 
 def rotate_matrix(matrix):
@@ -13,7 +14,9 @@ def count_occurrences(lines):
     return counter
 
 
-def run_first_task(lines: list[str]):
+def run_first_task(file_name):
+    lines = get_file_lines(file_name)
+
     counter = 0
 
     # Horizontal
@@ -53,7 +56,9 @@ def is_valid_cross(lines: list[str], ctr: list[int]) -> bool:
     return True
 
 
-def run_second_task(lines: list[str]):
+def run_second_task(file_name):
+    lines = get_file_lines(file_name)
+
     """ Iterates through the text leaving the edges off.
     For each possible cross center ('A'), checks if the letters
     in the cross are valid or not. """
