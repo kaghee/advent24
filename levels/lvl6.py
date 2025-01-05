@@ -5,16 +5,21 @@ class GuardGallivant:
     def __init__(self, lines=None):
         self.DIRECTIONS = ["up", "right", "down", "left"]
         self.map = lines
+        self.covered_positions = []
+        self.start = None
         self.pos = None
         self.direction = "up"
-        self.covered_map = [[col for col in row] for row in self.map]
 
     def locate_guard(self):
         for y, row in enumerate(self.map):
             for x, col in enumerate(row):
                 if col == "^":
-                    self.pos = (y, x)
+                    self.start = (y, x)
                     break
+
+    def reset(self):
+        self.pos = self.start
+        self.direction = "up"
 
     def move_up(self, pos):
         self.pos = pos[0] - 1, pos[1]
@@ -36,39 +41,69 @@ class GuardGallivant:
         except IndexError:
             self.direction = self.DIRECTIONS[0]
 
+    def is_within_map(self):
+        return self.pos[0] > 0 and self.pos[1] > 0 and self.pos[0] < len(self.map) - 1 and self.pos[1] < len(self.map[0]) - 1
+
     def move_or_turn(self):
-        """ Move one step.
-        If there's a wall, revert to the previous position and turn 90deg.
-        If it's the edge of the map, return the current position.
-        Otherwise mark the path with X."""
-        covered_area = 0
-        self.covered_map[self.pos[0]][self.pos[1]] = "X"
+        """ Moves forward until a wall is hit.
+        Returns the covered path and a boolean indicating if a loop was found. """
+        covered_in_current_run = []
 
-        try:
-            while self.pos[0] > 0 and self.pos[1] > 0:
-                move_forward = getattr(self, f"move_{self.direction}")
-                current_pos = self.pos[:]
+        while self.is_within_map():
+            current_pos = self.pos[:]
+            # Take one step forward.
+            move_forward = getattr(self, f"move_{self.direction}")
+            move_forward(self.pos)
 
-                move_forward(self.pos)
-                if self.map[self.pos[0]][self.pos[1]] == "#":
-                    self.pos = current_pos
-                    self.turn()
+            # If there's a wall, turn 90 degrees instead of moving.
+            if self.map[self.pos[0]][self.pos[1]] == "#":
+                self.pos = current_pos
+                self.turn()
+            else:
+                # Mark the path (with direction) as covered.
+                if [self.pos, self.direction] not in covered_in_current_run:
+                    covered_in_current_run.append([self.pos, self.direction])
                 else:
-                    self.covered_map[self.pos[0]][self.pos[1]] = "X"
-        except IndexError:
-            print("Reached the end of the map at", self.pos)
-        print("Reached the end of the map at", self.pos)
+                    # This path has been covered before, we're in a loop.
+                    return covered_in_current_run, True
 
-        for line in self.covered_map:
-            covered_area += line.count("X")
-        print("Covered area:", covered_area)
-
+        return covered_in_current_run, False
 
     def run_first_task(self):
         self.locate_guard()
-        self.move_or_turn()
+        self.reset()
+        covered, _ = self.move_or_turn()
+        return covered
+
+    def run_second_task(self):
+        loop_counter = 0
+        covered_positions = self.run_first_task()
+
+        for item in covered_positions:
+            # Add an obstacle to the map.
+            pos = item[0]
+            self.map[pos[0]][pos[1]] = "#"
+            self.reset()
+            # Go through the path with the new map.
+            _, is_loop = self.move_or_turn()
+            if is_loop:
+                loop_counter += 1
+            # Restore original map
+            self.map[pos[0]][pos[1]] = "."
+
+        if self.start in [item[0] for _, item in enumerate(covered_positions)]:
+            loop_counter -= 1
+
+        return loop_counter
 
 
 def run_first_task(file_name):
     lines = get_file_lines(file_name)
-    GuardGallivant(lines).run_first_task()
+    result = GuardGallivant(lines).run_first_task()
+    print("Covered area:", len(result))
+
+
+def run_second_task(file_name):
+    lines = get_file_lines(file_name)
+    result = GuardGallivant(lines).run_second_task()
+    print("Loops found:", result)

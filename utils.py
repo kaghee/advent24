@@ -10,4 +10,4 @@ def get_file_content(file_name: str):
 
 def get_file_lines(file_name: str):
     content = get_file_content(file_name)
-    return content.splitlines()
+    return [list(l) for l in content.splitlines()]
