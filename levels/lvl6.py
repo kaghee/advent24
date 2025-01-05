@@ -21,17 +21,15 @@ class GuardGallivant:
         self.pos = self.start
         self.direction = "up"
 
-    def move_up(self, pos):
-        self.pos = pos[0] - 1, pos[1]
-
-    def move_down(self, pos):
-        self.pos = pos[0] + 1, pos[1]
-
-    def move_left(self, pos):
-        self.pos = pos[0], pos[1] - 1
-
-    def move_right(self, pos):
-        self.pos = pos[0], pos[1] + 1
+    def get_next_pos(self):
+        if self.direction == "up":
+            return self.pos[0] - 1, self.pos[1]
+        elif self.direction == "down":
+            return self.pos[0] + 1, self.pos[1]
+        elif self.direction == "left":
+            return self.pos[0], self.pos[1] - 1
+        elif self.direction == "right":
+            return self.pos[0], self.pos[1] + 1
 
     def turn(self):
         try:
@@ -42,32 +40,34 @@ class GuardGallivant:
             self.direction = self.DIRECTIONS[0]
 
     def is_within_map(self):
-        return self.pos[0] > 0 and self.pos[1] > 0 and self.pos[0] < len(self.map) - 1 and self.pos[1] < len(self.map[0]) - 1
+        height = len(self.map) - 1
+        width = len(self.map[0]) - 1
+        return self.pos[0] > 0 and self.pos[1] > 0 and self.pos[0] < height and self.pos[1] < width
 
     def move_or_turn(self):
-        """ Moves forward until a wall is hit.
+        """ Moves forward and turns whenever a wall is hit until the edge of the map is reached.
         Returns the covered path and a boolean indicating if a loop was found. """
-        covered_in_current_run = []
+        covered_path = dict()
 
         while self.is_within_map():
-            current_pos = self.pos[:]
-            # Take one step forward.
-            move_forward = getattr(self, f"move_{self.direction}")
-            move_forward(self.pos)
+            # Determine what the next step would be.
+            next_pos = self.get_next_pos()
 
             # If there's a wall, turn 90 degrees instead of moving.
-            if self.map[self.pos[0]][self.pos[1]] == "#":
-                self.pos = current_pos
+            if self.map[next_pos[0]][next_pos[1]] == "#":
                 self.turn()
             else:
-                # Mark the path (with direction) as covered.
-                if [self.pos, self.direction] not in covered_in_current_run:
-                    covered_in_current_run.append([self.pos, self.direction])
+                # Move forward and mark the path (with direction) as covered.
+                self.pos = next_pos
+                if covered_path.get(self.pos) is None:
+                    covered_path[self.pos] = [self.direction]
+                elif self.direction not in covered_path[self.pos]:
+                    covered_path[self.pos].append(self.direction)
                 else:
                     # This path has been covered before, we're in a loop.
-                    return covered_in_current_run, True
+                    return covered_path, True
 
-        return covered_in_current_run, False
+        return covered_path, False
 
     def run_first_task(self):
         self.locate_guard()
@@ -79,7 +79,7 @@ class GuardGallivant:
         loop_counter = 0
         covered_positions = self.run_first_task()
 
-        for item in covered_positions:
+        for item in covered_positions.items():
             # Add an obstacle to the map.
             pos = item[0]
             self.map[pos[0]][pos[1]] = "#"
