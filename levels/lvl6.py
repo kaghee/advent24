@@ -1,4 +1,4 @@
-from utils import get_file_lines
+from utils import get_file_line_chars
 
 
 class GuardGallivant:
@@ -98,12 +98,12 @@ class GuardGallivant:
 
 
 def run_first_task(file_name):
-    lines = get_file_lines(file_name)
+    lines = get_file_line_chars(file_name)
     result = GuardGallivant(lines).run_first_task()
     print("Covered area:", len(result))
 
 
 def run_second_task(file_name):
-    lines = get_file_lines(file_name)
+    lines = get_file_line_chars(file_name)
     result = GuardGallivant(lines).run_second_task()
     print("Loops found:", result)
