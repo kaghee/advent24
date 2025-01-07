@@ -36,17 +36,15 @@ class ResonantCollinearity:
     def run_task(self):
         antennas = self.get_antennas()
         antinodes = []
-        # Get every pair combination of antennas for each frequency
-        for frequency in antennas:
-            antenna_positions = antennas[frequency]
-            pairs = [(antenna_positions[i], antenna_positions[j]) for i in range(len(antenna_positions))
-                     for j in range(i + 1, len(antenna_positions))]
+        for coords in antennas.values():
+            # Get every pair combination of antennas for each frequency
+            pairs = itertools.combinations(coords, 2)
 
             for pair in pairs:
                 antinodes.extend(self.get_antinodes(pair))
 
         print('Unique antinode locations:',len(set(antinodes)))
-        
+
 
 def run_first_task(file_name):
     lines = get_file_lines(file_name)
