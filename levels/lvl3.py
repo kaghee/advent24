@@ -1,10 +1,12 @@
 import re
-from utils import get_file_lines
+import sys
+from input_parsers import parse_input, get_lines
 
 
-def run_first_task(file_name):
-    lines = get_file_lines(file_name)
+EXAMPLE = "xmul(2,4)&mul[3,7]!^don't()_mul(5,5)+mul(32,64](mul(11,8)undo()?mul(8,5))"
 
+
+def run_first_task(lines):
     scores = 0
     for line in lines:
         matches = re.findall(r"mul\(\d{1,3},\d{1,3}\)", line)
@@ -15,9 +17,7 @@ def run_first_task(file_name):
     print(scores)
 
 
-def run_second_task(file_name):
-    lines = get_file_lines(file_name)
-
+def run_second_task(lines):
     scores = 0
     enabled = True
     for line in lines:
@@ -31,3 +31,15 @@ def run_second_task(file_name):
                 enabled = True if item == "do()" else False
 
     print(scores)
+
+
+if __name__ == "__main__":
+    use_example = "-e" in sys.argv
+    input = EXAMPLE if use_example else parse_input('2024', '3')
+    lines = get_lines(input)
+
+    print("Part I:")
+    run_first_task(lines)
+
+    print("\nPart II:")
+    run_second_task(lines)

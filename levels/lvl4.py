@@ -1,7 +1,21 @@
 import re
+import sys
 import numpy as np
-from utils import get_file_lines
+from input_parsers import parse_input, get_lines
 
+
+EXAMPLE = """\
+MMMSXXMASM
+MSAMXMSMSA
+AMXSXMAAMM
+MSAMASMSMX
+XMASAMXAMM
+XXAMMXXAMA
+SMSMSASXSS
+SAXAMASAAA
+MAMMMXMMMM
+MXMXAXMASX\
+"""
 
 def rotate_matrix(matrix):
     return np.rot90(matrix)
@@ -14,9 +28,7 @@ def count_occurrences(lines):
     return counter
 
 
-def run_first_task(file_name):
-    lines = get_file_lines(file_name)
-
+def run_first_task(lines):
     counter = 0
 
     # Horizontal
@@ -56,9 +68,7 @@ def is_valid_cross(lines: list[str], ctr: list[int]) -> bool:
     return True
 
 
-def run_second_task(file_name):
-    lines = get_file_lines(file_name)
-
+def run_second_task(lines):
     """ Iterates through the text leaving the edges off.
     For each possible cross center ('A'), checks if the letters
     in the cross are valid or not. """
@@ -72,3 +82,12 @@ def run_second_task(file_name):
             counter += is_valid_cross(lines, ctr)
 
     print("Number of crosses:", counter)
+
+
+if __name__ == "__main__":
+    use_example = "-e" in sys.argv
+    input = EXAMPLE if use_example else parse_input('2024', '4')
+    lines = get_lines(input)
+
+    run_first_task(lines)
+    run_second_task(lines)

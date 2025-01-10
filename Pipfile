@@ -4,11 +4,11 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-altgraph = "*"
-future = "*"
-macholib = "*"
-numpy = "==2.0.2"
-six = "*"
+certifi = "==2024.12.14"
+charset-normalizer = "==3.4.1"
+idna = "==3.10"
+requests = "==2.32.3"
+urllib3 = "==2.3.0"
 
 [dev-packages]
 

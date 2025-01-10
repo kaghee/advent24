@@ -1,5 +1,19 @@
-from utils import get_file_line_chars
+import sys
+from input_parsers import parse_input, get_line_chars
 
+
+EXAMPLE = """\
+....#.....
+.........#
+..........
+..#.......
+.......#..
+..........
+.#..^.....
+........#.
+#.........
+......#...\
+"""
 
 class GuardGallivant:
     def __init__(self, lines=None):
@@ -73,7 +87,9 @@ class GuardGallivant:
         self.locate_guard()
         self.reset()
         covered, _ = self.move_or_turn()
+        print("Covered area:", len(covered))
         return covered
+
 
     def run_second_task(self):
         loop_counter = 0
@@ -94,16 +110,17 @@ class GuardGallivant:
         if self.start in [item[0] for _, item in enumerate(covered_positions)]:
             loop_counter -= 1
 
-        return loop_counter
+        print("Loops found:", loop_counter)
 
 
-def run_first_task(file_name):
-    lines = get_file_line_chars(file_name)
-    result = GuardGallivant(lines).run_first_task()
-    print("Covered area:", len(result))
+if __name__ == "__main__":
+    use_example = "-e" in sys.argv
+    input = EXAMPLE if use_example else parse_input('2024', '6')
+    lines = get_line_chars(input)
 
+    gg = GuardGallivant(lines)
+    print("Part I:")
+    gg.run_first_task()
 
-def run_second_task(file_name):
-    lines = get_file_line_chars(file_name)
-    result = GuardGallivant(lines).run_second_task()
-    print("Loops found:", result)
+    print("\nPart II:")
+    gg.run_second_task()

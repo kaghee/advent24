@@ -1,9 +1,12 @@
-from utils import get_file_line_chars
+import sys
+from input_parsers import parse_input
 
+
+EXAMPLE = '2333133121414131402'
 
 class DiskFragmenter:
-    def __init__(self, lines=None):
-        self.disk_map = lines[0]
+    def __init__(self, disk_map):
+        self.disk_map = disk_map
         self.visualized = []
 
     def transform(self):
@@ -103,11 +106,13 @@ class DiskFragmenter:
         print(f"The updated checksum is: {self.get_checksum()}")
 
 
-def run_first_task(file_name):
-    lines = get_file_line_chars(file_name)
-    DiskFragmenter(lines).run_task()
+if __name__ == "__main__":
+    use_example = "-e" in sys.argv
+    input = EXAMPLE if use_example else parse_input('2024', '9')
 
+    df = DiskFragmenter(input)
+    print("Part I:")
+    df.run_task()
 
-def run_second_task(file_name):
-    lines = get_file_line_chars(file_name)
-    DiskFragmenter(lines).run_task(whole_files=True)
+    print("\nPart II:")
+    df.run_task(whole_files=True)

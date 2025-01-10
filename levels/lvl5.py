@@ -1,7 +1,39 @@
+import sys
 import re
 import math
-from utils import get_file_content
+from input_parsers import parse_input
 
+
+EXAMPLE = """\
+47|53
+97|13
+97|61
+97|47
+75|29
+61|13
+75|53
+29|13
+97|29
+53|29
+61|53
+97|53
+61|29
+47|13
+75|47
+97|75
+47|61
+75|61
+47|29
+75|13
+53|13
+
+75,47,61,53,29
+97,61,53,29,13
+75,29,13
+75,97,47,61,53
+61,13,29
+97,13,75,29,47\
+"""
 
 class PrintQueue:
 
@@ -52,13 +84,13 @@ class PrintQueue:
         pass
 
 
-def run_first_task(file_name):
-    input_file = get_file_content(file_name)
-    PrintQueue(input_file).run_first_task()
+if __name__ == "__main__":
+    use_example = "-e" in sys.argv
+    lines = EXAMPLE if use_example else parse_input('2024', '5')
 
-
-def run_second_task(file_name):
-    input_file = get_file_content(file_name)
-    pq = PrintQueue(input_file)
+    pq = PrintQueue(lines)
+    print("Part I:")
     pq.run_first_task()
+
+    print("\nPart II:")
     pq.run_second_task()

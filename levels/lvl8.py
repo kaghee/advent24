@@ -1,8 +1,24 @@
 import re
+import sys
 import itertools
 import numpy as np
-from utils import get_file_lines
+from input_parsers import parse_input, get_lines
 
+
+EXAMPLE = """\
+............
+........0...
+.....0......
+.......0....
+....0.......
+......A.....
+............
+............
+........A...
+.........A..
+............
+............\
+"""
 
 class ResonantCollinearity:
     def __init__(self, lines=None):
@@ -68,10 +84,14 @@ class ResonantCollinearity:
         print('Unique antinode locations:',len(set(antinodes)))
 
 
-def run_first_task(file_name):
-    lines = get_file_lines(file_name)
-    ResonantCollinearity(lines).run_task(next_antinodes_only=True)
+if __name__ == "__main__":
+    use_example = "-e" in sys.argv
+    input = EXAMPLE if use_example else parse_input('2024', '8')
+    lines = get_lines(input)
 
-def run_second_task(file_name):
-    lines = get_file_lines(file_name)
-    ResonantCollinearity(lines).run_task()
+    rc = ResonantCollinearity(lines)
+    print("Part I:")
+    rc.run_task(next_antinodes_only=True)
+
+    print("\nPart II:")
+    rc.run_task()

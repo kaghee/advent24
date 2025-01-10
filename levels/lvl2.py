@@ -1,4 +1,15 @@
-from utils import get_file_lines
+import sys
+from input_parsers import parse_input, get_lines
+
+
+EXAMPLE = """\
+7 6 4 2 1
+1 2 7 8 9
+9 7 6 2 1
+1 3 2 4 5
+8 6 4 4 1
+1 3 6 7 9\
+"""
 
 
 def is_negative(num: int):
@@ -20,19 +31,6 @@ def is_report_safe(report) -> bool:
     return True
 
 
-def run_first_task(file_name):
-    lines = get_file_lines(file_name)
-
-    counter = 0
-
-    for line in lines:
-        report = [int(x) for x in line.split(" ")]
-        if is_report_safe(report):
-            counter += 1
-
-    print('counter',counter)
-
-
 def is_almost_safe(report):
     for idx, _ in enumerate(report):
         new_report = report.copy()
@@ -40,13 +38,21 @@ def is_almost_safe(report):
         is_safe = is_report_safe(new_report)
         if is_safe:
             return True
-        
+
     return False
-            
 
-def run_second_task(file_name):
-    lines = get_file_lines(file_name)
 
+def run_first_task(lines):
+    counter = 0
+    for line in lines:
+        report = [int(x) for x in line.split(" ")]
+        if is_report_safe(report):
+            counter += 1
+
+    print('counter', counter)
+
+
+def run_second_task(lines):
     counter = 0
     unsafe_reports = []
 
@@ -64,3 +70,15 @@ def run_second_task(file_name):
             counter += 1
 
     print('final counter', counter)
+
+
+if __name__ == "__main__":
+    use_example = "-e" in sys.argv
+    input = EXAMPLE if use_example else parse_input('2024', '2')
+    lines = get_lines(input)
+
+    print("Part I:")
+    run_first_task(lines)
+
+    print("\nPart II:")
+    run_second_task(lines)

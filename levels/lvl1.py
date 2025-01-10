@@ -1,5 +1,16 @@
+import sys
 import collections
-from utils import get_file_lines
+from input_parsers import parse_input, get_lines
+
+
+EXAMPLE = """\
+3   4
+4   3
+2   5
+1   3
+3   9
+3   3\
+"""
 
 
 def get_lists(lines: list[str]):
@@ -14,9 +25,7 @@ def get_lists(lines: list[str]):
     return first_array, second_array
 
 
-def run_first_task(file_name):
-    lines = get_file_lines(file_name)
-    
+def run_first_task(lines):
     diffs = 0
     first_array, second_array = get_lists(lines)
 
@@ -32,11 +41,9 @@ def run_first_task(file_name):
         diffs += curr
 
     print('sum of diffs:', diffs)
-    
 
-def run_second_task(file_name):
-    lines = get_file_lines(file_name)
 
+def run_second_task(lines):
     score = 0
     first_array, second_array = get_lists(lines)
 
@@ -47,3 +54,15 @@ def run_second_task(file_name):
         score += curr * frequency
 
     print('sum of frequencies:', score)
+
+
+if __name__ == "__main__":
+    use_example = "-e" in sys.argv
+    input = EXAMPLE if use_example else parse_input('2024', '1')
+    lines = get_lines(input)
+
+    print("Part I:")
+    run_first_task(lines)
+
+    print("\nPart II:")
+    run_second_task(lines)

@@ -1,5 +1,18 @@
-from utils import get_file_lines
+import sys
+from input_parsers import parse_input, get_lines
 
+
+EXAMPLE = """\
+190: 10 19
+3267: 81 40 27
+83: 17 5
+156: 15 6
+7290: 6 8 6 15
+161011: 16 10 13
+192: 17 8 14
+21037: 9 7 18 13
+292: 11 6 16 20\
+"""
 
 class BridgeRepair:
     def __init__(self, lines=None):
@@ -49,11 +62,15 @@ class BridgeRepair:
         print("Result:", counter)
 
 
-def run_first_task(file_name):
-    lines = get_file_lines(file_name)
-    BridgeRepair(lines).run_task()
+if __name__ == "__main__":
+    use_example = "-e" in sys.argv
 
+    input = EXAMPLE if use_example else parse_input('2024', '7')
+    lines = get_lines(input)
 
-def run_second_task(file_name):
-    lines = get_file_lines(file_name)
-    BridgeRepair(lines).run_task(with_concat=True)
+    br = BridgeRepair(lines)
+    print("Part I:")
+    br.run_task()
+
+    print("\nPart II:")
+    br.run_task(with_concat=True)
