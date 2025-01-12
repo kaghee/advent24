@@ -74,12 +74,15 @@ class HoofIt:
 
         return path_ends
 
-    def run_task(self):
+    def run_task(self, count_all_paths=False):
         counter = 0
         trailheads = self.get_trailheads()
         for trailhead in trailheads:
-            path_ends = set(self.proceed_on_path(trailhead))
-            counter += len(path_ends)
+            path_ends = self.proceed_on_path(trailhead)
+            if count_all_paths:
+                counter += len(path_ends)
+            else:
+                counter += len(set(path_ends))
 
         print("Sum of trailhead scores:", counter)
 
@@ -92,3 +95,6 @@ if __name__ == "__main__":
     print("Part I:")
     hi = HoofIt(lines)
     hi.run_task()
+
+    print("Part II:")
+    hi.run_task(count_all_paths=True)
