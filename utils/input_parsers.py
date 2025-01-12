@@ -10,5 +10,8 @@ def parse_input(year, day) -> str:
 def get_lines(input: str) -> list[str]:
     return input.splitlines()
 
+def get_line_chars_as_ints(input: str):
+    return [list(map(int, list(l))) for l in input.splitlines()]
+
 def get_line_chars(input: str):
     return [list(l) for l in input.splitlines()]
