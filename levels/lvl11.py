@@ -1,45 +1,67 @@
 import sys
-from input_parsers import parse_input, get_line_chars_as_ints
+import math
+from input_parsers import parse_input
 
 
-# EXAMPLE = "0 1 10 99 999"
-EXAMPLE = "125 17"
+EXAMPLE = "125"
+# EXAMPLE = "125 17"
 
 
 class PlutonianPebbles:
-    def __init__(self, numbers: list[str]):
-        self.pebbles = numbers
-        self.updated = []
+    def __init__(self, pebbles):
+        self.pebbles = pebbles
+        self.pebbles_memo = {}
 
-    def blink(self):
-        i = 0
-        while i < len(self.pebbles):
-            pebble = self.pebbles[i]
-            if pebble == "0":
-                self.pebbles[i] = "1"
-            elif not len(pebble) % 2:
-                self.pebbles[i] = pebble[:len(pebble) // 2]
-                self.pebbles.insert(i + 1, str(int(pebble[len(pebble) // 2:])))
-                i += 1
-            else:
-                self.pebbles[i] = str(int(pebble) * 2024)
-            i += 1
+    def generate_pebbles(self, pebble):
+        new_pebbles = []
+        if pebble == 0:
+            new_pebbles.append(1)
+        elif not (math.floor(math.log10(pebble)) + 1) % 2:
+            new_pebbles.append(int(str(pebble)[:len(str(pebble)) // 2]))
+            new_pebbles.append(int(str(pebble)[len(str(pebble)) // 2:]))
+        else:
+            new_pebbles.append(pebble * 2024)
 
-    def run_task(self, blinks):
-        for _ in range(blinks):
-            self.blink()
-        print("Number of pebbles:", len(self.pebbles))
+        return new_pebbles
+
+    def visit(self, pebble):
+        if pebble is None:
+            return
+
+    def get_generated_pebbles_after_n_blinks(self, pebble, count, repetitions, acc=None):
+        if acc is None:
+            acc = []
+
+        pebbles = self.generate_pebbles(pebble)
+        if count == repetitions:
+            acc.extend(pebbles)
+            return pebbles
+
+        for peb in pebbles:
+            self.get_generated_pebbles_after_n_blinks(
+                peb, count + 1, repetitions, acc)
+
+        return acc
+
+    def run_task(self, repetitions):
+        counter = 0
+        for pebble in self.pebbles:
+            res = self.get_generated_pebbles_after_n_blinks(
+                pebble, 1, repetitions)
+            counter += len(res)
+
+        print("Number of pebbles:", counter)
 
 
 if __name__ == "__main__":
     use_example = "-e" in sys.argv
     input = EXAMPLE if use_example else parse_input('2024', '11')
-    numbers = input.split(" ")
-    # numbers = [(x, False) for x in input.split(" ")]
+    pebbles = [int(x) for x in input.split(" ")]
 
     print("Part I:")
-    pp = PlutonianPebbles(numbers)
+    pp = PlutonianPebbles(pebbles)
     pp.run_task(25)
 
     print("Part II:")
-    pp.run_task(75)
+    pp.run_task(35)
+    # pp.run_task(pebbles, 50)
