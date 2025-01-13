@@ -23,19 +23,22 @@ class PlutonianPebbles:
 
         return new_pebbles
 
-    def get_generated_pebbles_after_n_blinks(self, pebble, repetitions, acc=None):
-        if acc is None:
-            acc = []
+    def get_generated_pebbles_after_n_blinks(self, pebble, repetitions):
+        acc = 0
+
+        if (pebble, repetitions) in self.pebbles_memo:
+            return self.pebbles_memo[(pebble, repetitions)]
 
         pebbles = self.generate_pebbles(pebble)
         if repetitions == 1:
-            acc.extend(pebbles)
-            return pebbles
+            acc += len(pebbles)
+            return acc
 
         for peb in pebbles:
-            self.get_generated_pebbles_after_n_blinks(
-                peb, repetitions - 1, acc)
+            acc += self.get_generated_pebbles_after_n_blinks(
+                peb, repetitions - 1)
 
+        self.pebbles_memo[(pebble, repetitions)] = acc
         return acc
 
     def run_task(self, repetitions):
@@ -43,7 +46,7 @@ class PlutonianPebbles:
         for pebble in self.pebbles:
             res = self.get_generated_pebbles_after_n_blinks(
                 pebble, repetitions)
-            counter += len(res)
+            counter += res
 
         print("Number of pebbles:", counter)
 
@@ -58,4 +61,4 @@ if __name__ == "__main__":
     pp.run_task(25)
 
     print("Part II:")
-    pp.run_task(35)
+    pp.run_task(75)
