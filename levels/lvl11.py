@@ -3,8 +3,7 @@ import math
 from input_parsers import parse_input
 
 
-EXAMPLE = "125"
-# EXAMPLE = "125 17"
+EXAMPLE = "125 17"
 
 
 class PlutonianPebbles:
@@ -24,22 +23,18 @@ class PlutonianPebbles:
 
         return new_pebbles
 
-    def visit(self, pebble):
-        if pebble is None:
-            return
-
-    def get_generated_pebbles_after_n_blinks(self, pebble, count, repetitions, acc=None):
+    def get_generated_pebbles_after_n_blinks(self, pebble, repetitions, acc=None):
         if acc is None:
             acc = []
 
         pebbles = self.generate_pebbles(pebble)
-        if count == repetitions:
+        if repetitions == 1:
             acc.extend(pebbles)
             return pebbles
 
         for peb in pebbles:
             self.get_generated_pebbles_after_n_blinks(
-                peb, count + 1, repetitions, acc)
+                peb, repetitions - 1, acc)
 
         return acc
 
@@ -47,7 +42,7 @@ class PlutonianPebbles:
         counter = 0
         for pebble in self.pebbles:
             res = self.get_generated_pebbles_after_n_blinks(
-                pebble, 1, repetitions)
+                pebble, repetitions)
             counter += len(res)
 
         print("Number of pebbles:", counter)
@@ -64,4 +59,3 @@ if __name__ == "__main__":
 
     print("Part II:")
     pp.run_task(35)
-    # pp.run_task(pebbles, 50)
