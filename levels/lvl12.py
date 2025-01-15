@@ -10,36 +10,35 @@ from input_parsers import get_line_chars, parse_input
 # """
 
 # total price 772
-EXAMPLE = """\
-OOOOO
-OXOXO
-OOOOO
-OXOXO
-OOOOO\
-"""
+# EXAMPLE = """\
+# OOOOO
+# OXOXO
+# OOOOO
+# OXOXO
+# OOOOO\
+# """
 
 # total price 1930
-# EXAMPLE = """\
-# RRRRIICCFF
-# RRRRIICCCF
-# VVRRRCCFFF
-# VVRCCCJFFF
-# VVVVCJJCFE
-# VVIVCCJJEE
-# VVIIICJJEE
-# MIIIIIJJEE
-# MIIISIJEEE
-# MMMISSJEEE\
-# """
+EXAMPLE = """\
+RRRRIICCFF
+RRRRIICCCF
+VVRRRCCFFF
+VVRCCCJFFF
+VVVVCJJCFE
+VVIVCCJJEE
+VVIIICJJEE
+MIIIIIJJEE
+MIIISIJEEE
+MMMISSJEEE\
+"""
 
 
 class GardenGroups:
     def __init__(self, garden):
         self.garden = garden
         self.groups_info = {}
-        self.prev_group = None
         self.graph = {}
-        self.unique_counter = 0
+        self.unique_key = 0
         self.is_new_group = False
         self.DIRECTIONS = [(-1, 0), (0, 1), (1, 0), (0, -1)
                            ]  # up, right, down, left
@@ -86,20 +85,24 @@ class GardenGroups:
             self.add_edge(cell, neighbour)
 
     def dfs(self, cell: tuple[int, int], visited: set):
-        current_group = self.garden[cell[0]][cell[1]]
-
+        """ Checks the neighbouring cells and increases the area and number of fences
+        for every cell based on how many neighbour cells belong to the same group."""
         if cell not in visited:
             neighbours = self.get_neighbours_in_group(cell)
+            current_group = self.garden[cell[0]][cell[1]]
 
             if current_group not in self.groups_info:
-                # We are in a new group. Start counting the area.
+                # We are in a new group. Add a new entry to our data.
                 self.groups_info[current_group] = {
                     "area": 1, "fences": 4 - len(neighbours)}
             elif self.is_new_group:
                 # We are in a new group but we already covered a group with this name.
-                self.unique_counter += 1
-                unique_group_name = f"{current_group}-{self.unique_counter}"
-                self.groups_info[unique_group_name] = {
+                # Alter the previous group's name before storing this new one.
+                self.unique_key += 1
+                self.groups_info[self.unique_key] = self.groups_info[current_group]
+                del self.groups_info[current_group]
+
+                self.groups_info[current_group] = {
                     "area": 1, "fences": 4 - len(neighbours)}
             else:
                 # We are still within the current group. Increase the area and fences.
@@ -107,7 +110,6 @@ class GardenGroups:
                 self.groups_info[current_group]["fences"] += 4 - \
                     len(neighbours)
 
-            self.prev_group = current_group
             visited.add(cell)
             self.is_new_group = False
 
@@ -117,12 +119,16 @@ class GardenGroups:
     def run_task(self):
         visited = set()
 
+        # Create a graph from the map, where nodes are the cells and
+        # edges exist between nodes that make up a connected graph.
         for i, row in enumerate(self.garden):
             for j, _ in enumerate(row):
                 cell = (i, j)
                 neighbours = self.get_neighbours_in_group(cell)
                 self.add_nodes_to_graph(cell, neighbours)
 
+        # Traverse the graph recursively to collect data. Take note of
+        # every new group (= every new disconnected graph within the graph).
         for g in list(self.graph):
             if g not in visited:
                 self.is_new_group = True
@@ -131,7 +137,6 @@ class GardenGroups:
         price = sum([x["area"] * x["fences"]
                     for x in self.groups_info.values()])
 
-        print('Groups:', self.groups_info)
         print("Total price:", price)
 
 
