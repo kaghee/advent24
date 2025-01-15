@@ -39,6 +39,8 @@ class GardenGroups:
         self.groups_info = {}
         self.prev_group = None
         self.graph = {}
+        self.unique_counter = 0
+        self.is_new_group = False
         self.DIRECTIONS = [(-1, 0), (0, 1), (1, 0), (0, -1)
                            ]  # up, right, down, left
 
@@ -87,16 +89,18 @@ class GardenGroups:
         current_group = self.garden[cell[0]][cell[1]]
 
         if cell not in visited:
-            visited.add(cell)
-
             neighbours = self.get_neighbours_in_group(cell)
-            # self.add_nodes_to_graph(cell, neighbours)
 
             if current_group not in self.groups_info:
                 # We are in a new group. Start counting the area.
                 self.groups_info[current_group] = {
                     "area": 1, "fences": 4 - len(neighbours)}
-
+            elif self.is_new_group:
+                # We are in a new group but we already covered a group with this name.
+                self.unique_counter += 1
+                unique_group_name = f"{current_group}-{self.unique_counter}"
+                self.groups_info[unique_group_name] = {
+                    "area": 1, "fences": 4 - len(neighbours)}
             else:
                 # We are still within the current group. Increase the area and fences.
                 self.groups_info[current_group]["area"] += 1
@@ -104,26 +108,31 @@ class GardenGroups:
                     len(neighbours)
 
             self.prev_group = current_group
+            visited.add(cell)
+            self.is_new_group = False
 
             for neighbour in neighbours:
                 self.dfs(neighbour, visited)
-
 
     def run_task(self):
         visited = set()
 
         for i, row in enumerate(self.garden):
             for j, _ in enumerate(row):
+                cell = (i, j)
+                neighbours = self.get_neighbours_in_group(cell)
+                self.add_nodes_to_graph(cell, neighbours)
 
-                self.dfs((i, j), visited)
-
-
-        print('Groups:', self.groups_info)
+        for g in list(self.graph):
+            if g not in visited:
+                self.is_new_group = True
+                self.dfs(g, visited)
 
         price = sum([x["area"] * x["fences"]
                     for x in self.groups_info.values()])
+
+        print('Groups:', self.groups_info)
         print("Total price:", price)
-        print('GRAPH:', self.graph)
 
 
 if __name__ == "__main__":
