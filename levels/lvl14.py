@@ -23,11 +23,13 @@ p=9,5 v=-3,-3\
 class RestroomRedoubt:
     def __init__(self, robots, map_size):
         self.robots = robots
-        self.map_size = map_size
-        self.map = [[0 for i in range(self.map_size[0])]
-                    for j in range(self.map_size[1])]
+        self.width = map_size[0]
+        self.height = map_size[1]
+        self.map = [[0 for _ in range(self.width)]
+                    for _ in range(self.height)]
 
     def get_coords(self, robot: str):
+        """ Reads the position and velocity coordinates for a robot. """
         nums = [int(m.group()) for m in re.finditer(r"-?\d+", robot)]
         return (nums[0], nums[1]), (nums[2], nums[3])
 
@@ -39,51 +41,60 @@ class RestroomRedoubt:
         self.map = updated
 
     def move_all_for_time(self, seconds):
+        """ Determines the new position of each robot after the specified
+        no. of seconds, and updates the map with their new position. """
         for robot in self.robots:
             new_pos, vel = self.get_coords(robot)
             if seconds == 0:
                 new_pos = self.move_robot((0, 0), new_pos)
             else:
-                for i in range(seconds):
+                for _ in range(seconds):
                     new_pos = self.move_robot(new_pos, vel)
             self.update_map(new_pos)
 
     def move_robot(self, pos, vel):
+        """ Calculates the new position of a robot, considering jumping
+        to the other edge when reaching the end of the map. """
         new_x = pos[0] + vel[0]
         new_y = pos[1] + vel[1]
 
-        if new_x >= self.map_size[0]:
-            new_x -= self.map_size[0]
-        if new_y >= self.map_size[1]:
-            new_y -= self.map_size[1]
+        if new_x >= self.width:
+            new_x -= self.width
+        if new_y >= self.height:
+            new_y -= self.height
 
         if new_x < 0:
-            new_x = self.map_size[0] + new_x
+            new_x = self.width + new_x
         if new_y < 0:
-            new_y = self.map_size[1] + new_y
+            new_y = self.height + new_y
 
         return (new_x, new_y)
 
     def visualize(self):
+        """ Prints the map in a grid. """
         for line in self.map:
             print(line)
 
     def get_result(self):
-        counter = [0 for _ in range(4)]
+        """ Calculates the product of the no. of robots in each quadrant. """
+        quadrants = [0 for _ in range(4)]
 
-        for line in self.map[:self.map_size[1]//2]:
-            counter[0] += sum(line[:self.map_size[0]//2])
+        mid_w = self.width // 2
+        mid_h = self.height // 2
 
-        for line in self.map[:self.map_size[1]//2]:
-            counter[1] += sum(line[self.map_size[0]//2+1:])
+        for line in self.map[:mid_h]:
+            quadrants[0] += sum(line[:mid_w])
 
-        for line in self.map[self.map_size[1]//2+1:]:
-            counter[2] += sum(line[:self.map_size[0]//2])
+        for line in self.map[:mid_h]:
+            quadrants[1] += sum(line[mid_w + 1:])
 
-        for line in self.map[self.map_size[1]//2+1:]:
-            counter[3] += sum(line[self.map_size[0]//2+1:])
+        for line in self.map[mid_h + 1:]:
+            quadrants[2] += sum(line[:mid_w])
 
-        return math.prod(counter)
+        for line in self.map[mid_h + 1:]:
+            quadrants[3] += sum(line[mid_w + 1:])
+
+        return math.prod(quadrants)
 
     def run_task(self):
         self.move_all_for_time(100)
