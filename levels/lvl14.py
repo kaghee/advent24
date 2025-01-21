@@ -1,11 +1,9 @@
 import sys
 import re
+import math
 from input_parsers import parse_input, get_lines
 
 
-# EXAMPLE = """\
-# p=2,4 v=2,-3\
-# """
 EXAMPLE = """\
 p=0,4 v=3,-3
 p=6,3 v=-1,-3
@@ -70,10 +68,26 @@ class RestroomRedoubt:
         for line in self.map:
             print(line)
 
+    def get_result(self):
+        counter = [0 for _ in range(4)]
+
+        for line in self.map[:self.map_size[1]//2]:
+            counter[0] += sum(line[:self.map_size[0]//2])
+
+        for line in self.map[:self.map_size[1]//2]:
+            counter[1] += sum(line[self.map_size[0]//2+1:])
+
+        for line in self.map[self.map_size[1]//2+1:]:
+            counter[2] += sum(line[:self.map_size[0]//2])
+
+        for line in self.map[self.map_size[1]//2+1:]:
+            counter[3] += sum(line[self.map_size[0]//2+1:])
+
+        return math.prod(counter)
+
     def run_task(self):
         self.move_all_for_time(100)
-        print('\n\n')
-        self.visualize()
+        return self.get_result()
 
 
 if __name__ == "__main__":
@@ -84,4 +98,5 @@ if __name__ == "__main__":
 
     print("Part I:")
     rr = RestroomRedoubt(lines, map_size)
-    rr.run_task()
+    res = rr.run_task()
+    print("Safety factor:", res)
