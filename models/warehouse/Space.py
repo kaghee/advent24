@@ -11,3 +11,6 @@ class Space(WarehouseObject):
 
     def push(self, direction):
         return True
+    
+    def try_push(self, direction):
+        return True

@@ -14,3 +14,6 @@ class Wall(WarehouseObject):
 
     def push(self, direction):
         return False
+    
+    def try_push(self, direction):
+        return False
