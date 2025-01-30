@@ -1,6 +1,5 @@
 import sys
 
-from matplotlib import pyplot as plt
 from input_parsers import get_line_chars, parse_input
 from map_utils import is_on_map
 import numpy as np
@@ -135,7 +134,7 @@ class ReindeerMaze:
                 pprint(single_source_dijkstra(
                     self.line_graph, tuple(sorted([virtual_start, self.start])), tuple(sorted([potential_last_step, self.end]))))
             except Exception as e:
-                print('!!!!', e)
+                print(e)
 
 
 if __name__ == "__main__":
