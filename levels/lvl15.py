@@ -1,6 +1,7 @@
 import sys
 from Coordinate import Coordinate
 from input_parsers import parse_input, get_lines
+from map_utils import visualize
 from warehouse.BigBox import BigBox
 from warehouse.Box import Box
 from warehouse.Robot import Robot
@@ -80,19 +81,14 @@ class WarehouseWoes:
                     self.big_warehouse[x][y*2] = Space(x, y*2)
                     self.big_warehouse[x][y*2 + 1] = Space(x, y*2 + 1)
 
-    def visualize(self, warehouse):
-        print("\n\n")
-        for line in warehouse:
-            print("".join([str(x) for x in line]))
-
     def run_task(self, with_big_warehouse=False):
         self.map_warehouse(with_big_warehouse)
         wh = self.big_warehouse if with_big_warehouse else self.warehouse
-        self.visualize(wh)
+        visualize(wh)
 
         for direction in self.directions:
             self.robot.push(direction)
-            self.visualize(wh)
+            visualize(wh)
 
         if with_big_warehouse:
             boxes = [
