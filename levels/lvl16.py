@@ -72,7 +72,7 @@ class ReindeerMaze:
     def get_weight(self, u, v) -> int:
         """ Determines if the path between 2 given cells are in line or include a turn. """
         is_turning = u[0] != v[0] and u[1] != v[1]
-        return 1001 if is_turning else 2
+        return 1001 if is_turning else 1
 
     def generate_line_graph(self):
         for node in self.graph.nodes:
@@ -121,18 +121,17 @@ class ReindeerMaze:
 
         # Starting path/edge is the cell left of our start,
         # since our initial direction is East
-        virtual_start = (self.start[0] - 1, self.start[1])
+        virtual_start = (self.start[0], self.start[1] - 1)
 
         self.graph.add_edge(virtual_start, self.start)
-
         self.generate_line_graph()
 
         end_neighbours = self.get_neighbours(self.end)
         for potential_last_step in end_neighbours:
             try:
-                print('\n\n')
-                pprint(single_source_dijkstra(
-                    self.line_graph, tuple(sorted([virtual_start, self.start])), tuple(sorted([potential_last_step, self.end]))))
+                result = single_source_dijkstra(
+                    self.line_graph, tuple(sorted([virtual_start, self.start])), tuple(sorted([potential_last_step, self.end])))
+                print("Shortest path:", result[0])
             except Exception as e:
                 print(e)
 
