@@ -26,6 +26,26 @@ EXAMPLE = """\
 ###############\
 """
 
+EXAMPLE = """\
+#################
+#...#...#...#..E#
+#.#.#.#.#.#.#.#.#
+#.#.#.#...#...#.#
+#.#.#.#.###.#.#.#
+#...#.#.#.....#.#
+#.#.#.#.#.#####.#
+#.#...#.#.#.....#
+#.#.#####.#.###.#
+#.#.#.......#...#
+#.#.###.#####.###
+#.#.#...#.....#.#
+#.#.#.#####.###.#
+#.#.#.........#.#
+#.#.#.#########.#
+#S#.............#
+#################\
+"""
+
 
 class ReindeerMaze:
 
@@ -118,7 +138,6 @@ class ReindeerMaze:
 
     def run_task(self):
         self.generate_graph()
-
         # Starting path/edge is the cell left of our start,
         # since our initial direction is East
         virtual_start = (self.start[0], self.start[1] - 1)
@@ -127,13 +146,29 @@ class ReindeerMaze:
         self.generate_line_graph()
 
         end_neighbours = self.get_neighbours(self.end)
+        best_paths = []
+        min_score = float("inf")
+
         for potential_last_step in end_neighbours:
-            try:
-                result = single_source_dijkstra(
-                    self.line_graph, tuple(sorted([virtual_start, self.start])), tuple(sorted([potential_last_step, self.end])))
-                print("Shortest path:", result[0])
-            except Exception as e:
-                print(e)
+            graph_start = tuple(sorted([virtual_start, self.start]))
+            graph_end = tuple(sorted([potential_last_step, self.end]))
+
+            paths = list(nx.all_shortest_paths(
+                self.line_graph, graph_start, graph_end, weight="weight"))
+            score = nx.path_weight(
+                self.line_graph, paths[0], weight="weight")
+            if score < min_score:
+                best_paths = paths
+                min_score = score
+
+        print("Paths with lowest score:", min_score)
+
+        # Flatten the paths. Take each tile (x, y) of all the edges in the line graph.
+        tiles = set(
+            [tile for path in best_paths for edge in path for tile in edge])
+
+        # Remove 1 for the virtual start in the graph
+        print("All tiles on paths:", len(tiles) - 1)
 
 
 if __name__ == "__main__":
