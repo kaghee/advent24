@@ -1,11 +1,8 @@
 import sys
-
 from input_parsers import get_line_chars, parse_input
 from map_utils import is_on_map
 import numpy as np
 import networkx as nx
-from networkx.algorithms.shortest_paths.weighted import single_source_dijkstra
-from pprint import pprint
 
 # lowest: 7036
 EXAMPLE = """\
